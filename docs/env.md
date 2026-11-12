@@ -25,6 +25,7 @@
 | PyTorch | **2.7.1+cu126** | CUDA 12.6 |
 | CUDA 可用性 | **True** | 通过 `scripts/check_env.py` 验证 |
 | VS Code | 1.145.3 | 已装 Remote-WSL 扩展 |
+| 基础工具 | git 2.34.1 / cmake 3.22.1 / gcc 11.4.0 | build-essential、curl、wget、unzip、htop、tmux |
 
 ## 3. 安装步骤
 
@@ -80,6 +81,7 @@ device   : NVIDIA GeForce RTX 3060 Laptop GPU
 | 4 | torch 默认是 cu13 | 驱动 546.30 只支持到 CUDA 12.3 | 钉死 `torch==2.7.1`（cu126，12.x 向下兼容） |
 | 5 | Miniconda 自带 Python 3.14 | PyTorch 无对应 wheel | 单独建 Python 3.10 环境 |
 | 6 | `conda create` 静默失败 | 退出码 0，但环境不存在 | 先 `conda tos accept` 接受频道条款 |
+| 7 | `apt-get update` 卡死 | 十几分钟无输出、`/tmp/apt.log` 为 0 字节 | mirrored 模式注入的 `http_proxy` 让 apt 挂住；写 `Acquire::http::Proxy "DIRECT";` 后立即正常 |
 
 ### 关键修复：mirrored 网络模式
 
@@ -96,6 +98,18 @@ firewall=true
 生效方式：`wsl --shutdown`，等待 8 秒后重新进入。
 
 效果：WSL 自动继承 Windows 的代理设置（`http_proxy=http://127.0.0.1:7897`），下载速率从 40 KB/s 提升到 40+ MB/s。
+
+### 配套修复：apt 直连
+
+`/etc/apt/apt.conf.d/99noproxy`：
+
+```
+Acquire::http::Proxy "DIRECT";
+Acquire::https::Proxy "DIRECT";
+```
+
+原因：mirrored 模式自动注入的 `http_proxy` 会让 `apt-get` 长时间无响应；国内镜像直连即可。
+同时 `/etc/apt/sources.list` 已替换为 `https://mirrors.aliyun.com/ubuntu`。
 
 ## 6. 常用命令
 
