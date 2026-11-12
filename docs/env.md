@@ -24,6 +24,7 @@
 | conda 环境 | `ea` | Python **3.10.22** |
 | PyTorch | **2.7.1+cu126** | CUDA 12.6 |
 | CUDA 可用性 | **True** | 通过 `scripts/check_env.py` 验证 |
+| VS Code | 1.145.3 | 已装 Remote-WSL 扩展 |
 
 ## 3. 安装步骤
 
