@@ -1,6 +1,6 @@
 """统计数字文件：个数、平均值、最小值、最大值。"""
 
-
+from pathlib import Path
 def load_numbers(filename):
     """读取文件，返回 (有效数字列表, 跳过的行数)。"""
     nums = []
@@ -18,7 +18,7 @@ def load_numbers(filename):
                     skipped += 1
     except FileNotFoundError:
         print(f"文件不存在：{filename}")
-        return [], 0
+        return None, 0
 
     return nums, skipped
 
@@ -31,10 +31,11 @@ def summarize(nums):
 
 
 def main():
-    filename = "numbers.txt"
+    filename = Path(__file__).parent / "numbers.txt"
 
     nums, skipped = load_numbers(filename)
-
+    if nums is None:
+        return
     if not nums:
         print("没有有效数据（文件为空或全是非法行）")
         return
